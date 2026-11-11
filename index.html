@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#101c22" />
+  <title>Storm Chasers USA — Plains Watch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="world" aria-label="Vue de la plaine et de la tornade"></canvas>
+    <div class="vignette"></div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Storm Chasers USA">
+        <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M18.5 2 7 18h8l-1.5 12L25 13h-8z" fill="currentColor"/></svg></span>
+        <span class="brand-copy"><strong>STORM<span>CHASERS</span></strong><small>USA · PLAINS WATCH</small></span>
+      </a>
+      <div class="location"><span class="live-dot"></span><div><b>TORNADO WATCH</b><small>EL RENO COUNTY · OKLAHOMA</small></div></div>
+      <div class="top-actions"><span class="day-clock"><span id="clock">16:42</span><small>LOCAL TIME</small></span><button class="icon-btn" id="soundBtn" title="Son" aria-label="Activer ou couper le son">♫</button><button class="icon-btn" id="pauseBtn" title="Pause" aria-label="Pause">Ⅱ</button></div>
+    </header>
+
+    <section class="mission-card glass">
+      <div class="section-label"><span class="label-line"></span> MISSION ACTIVE <span class="mission-code">#04</span></div>
+      <h1>Intercept<br><em>la supercellule</em></h1>
+      <p class="mission-desc">Place une sonde au sol puis capture une image de la tornade.</p>
+      <div class="objective"><span class="objective-icon">⌖</span><div><b>Déployer une sonde</b><small id="probeState">En attente · portée &lt; 240 m</small></div><span class="objective-check" id="probeCheck">○</span></div>
+      <div class="objective"><span class="objective-icon camera-icon">▣</span><div><b>Photographier le vortex</b><small id="photoState">En attente · distance &lt; 500 m</small></div><span class="objective-check" id="photoCheck">○</span></div>
+      <div class="mission-reward"><span>RÉCOMPENSE</span><b>+$850 <i>·</i> 240 XP</b></div>
+      <div class="progress-track"><span id="missionProgress"></span></div>
+    </section>
+
+    <section class="radar-card glass">
+      <div class="radar-heading"><div class="section-label"><span class="radar-dot"></span> DOPPLER LIVE</div><button id="expandRadar" class="tiny-action">PLEIN ÉCRAN ↗</button></div>
+      <div class="radar-wrap"><canvas id="radar" width="240" height="170"></canvas><div class="radar-readout"><span>ROTATION</span><b id="rotationRead">38 kt</b></div></div>
+      <div class="radar-legend"><span><i class="legend-rain"></i>PRÉCIPITATIONS</span><span><i class="legend-rot"></i>ROTATION</span></div>
+    </section>
+
+    <div class="warning-pill glass" id="warningPill"><span class="warning-symbol">!</span><span><b>TORNADO OBSERVÉ</b><small>EF2 · trajectoire NE</small></span><span class="warning-pulse"></span></div>
+
+    <section class="conditions glass">
+      <div class="condition"><span class="condition-icon">↗</span><small>VENT</small><b id="windRead">SW · 42 <i>km/h</i></b></div>
+      <div class="condition"><span class="condition-icon pressure-icon">◉</span><small>PRESSION</small><b id="pressureRead">987 <i>hPa</i></b></div>
+      <div class="condition"><span class="condition-icon">☁</span><small>PLUIE</small><b id="rainRead">Modérée</b></div>
+    </section>
+
+    <div class="map-card glass" id="mapCard">
+      <div class="map-header"><div><span class="section-label">CARTE GPS</span><small>ROUTE 66 · OKLAHOMA</small></div><button id="mapToggle" class="map-expand" aria-label="Agrandir la carte">⤢</button></div>
+      <canvas id="minimap" width="260" height="152"></canvas>
+      <div class="map-footer"><span><i class="you-dot"></i> VOUS</span><span><i class="storm-dot"></i> SUPERCELLULE</span></div>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <div class="mission-complete glass" id="completeCard"><div class="complete-icon">✓</div><span class="section-label">MISSION ACCOMPLIE</span><h2>Dans l'œil<br>de la tempête.</h2><p>Vos données aideront à mieux prévoir les prochaines tornades.</p><div class="complete-reward">+$850 <span>·</span> 240 XP</div><button class="primary-btn" id="nextMission">MISSION SUIVANTE <span>→</span></button></div>
+    <div class="modal-backdrop" id="modalBackdrop"><section class="garage glass" role="dialog" aria-modal="true" aria-labelledby="garageTitle"><div class="garage-top"><div><span class="section-label">FLOTTE & ÉQUIPEMENT</span><h2 id="garageTitle">Garage de chasse</h2></div><button class="close-btn" id="closeGarage" aria-label="Fermer">×</button></div><div class="garage-balance">SOLDE DISPONIBLE <b id="garageMoney">$2,450</b></div><div class="vehicle-list" id="vehicleList"></div><div class="garage-foot"><span id="garageHint">Votre véhicule actuel est prêt à partir.</span><button class="primary-btn" id="garageAction">AMÉLIORER LE VÉHICULE <span>→</span></button></div></section></div>
+
+    <section class="bottom-hud">
+      <div class="drive-info glass"><div class="speed-wrap"><span class="speed-label">VITESSE</span><div><strong id="speedRead">042</strong><small>KM/H</small></div><div class="gear"><span id="gearRead">D</span><small>GEAR</small></div></div><div class="drive-meters"><div class="meter-row"><span>CARBURANT</span><b id="fuelRead">78%</b></div><div class="meter"><span id="fuelBar"></span></div><div class="meter-row"><span>ÉTAT DU VÉHICULE</span><b id="damageRead">100%</b></div><div class="meter damage-meter"><span id="damageBar"></span></div></div></div>
+      <div class="controls-hint"><span>CONDUITE</span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><small>ou flèches</small></div>
+      <nav class="action-dock glass" aria-label="Commandes"><button class="dock-action" id="radarAction"><span class="dock-icon radar-action-icon">◉</span><b>RADAR</b><kbd>R</kbd></button><button class="dock-action" id="probeAction"><span class="dock-icon">⌖</span><b>SONDE</b><kbd>E</kbd></button><button class="dock-action shutter-action" id="photoAction"><span class="dock-icon">▣</span><b>PHOTO</b><kbd>F</kbd></button><button class="dock-action" id="sirenAction"><span class="dock-icon">◖</span><b>SIRENE</b><kbd>Q</kbd></button></nav>
+      <div class="player-info glass"><div class="player-avatar">JD</div><div class="player-copy"><b>J. DAVIS <span>LVL 04</span></b><small><span id="cashRead">$2,450</span> <i>·</i> <span id="xpRead">1,280 XP</span></small></div><button id="garageBtn" class="garage-button" aria-label="Ouvrir le garage">⌘</button></div>
+    </section>
+
+    <div class="mobile-controls"><button class="steer steer-left" data-key="a">‹</button><div class="pedals"><button data-key="w">▲</button><button data-key="s">▼</button></div><button class="steer steer-right" data-key="d">›</button></div>
+    <div class="mobile-actions"><button id="mobileProbe">SONDE</button><button id="mobilePhoto">PHOTO</button></div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
